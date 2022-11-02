@@ -1,7 +1,7 @@
 import random
 
 
-choices = ["Rock", "Paper", "Scissors"]
+# choices = ["rock", "paper", "scissors"]
 
 def get_computer_choice() -> str:
     return random.choice(["rock", "paper", "scissors"])
@@ -34,4 +34,10 @@ def get_winner(computer_choice: str, user_choice: str) -> str:
         else:
             return c_w
 
-print(get_winner(get_computer_choice(),get_user_choice()))
+def play() -> str:
+    computer_choice = get_computer_choice()
+    user_choice = get_user_choice()
+
+    return get_winner(computer_choice, user_choice)
+
+print(play())
