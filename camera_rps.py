@@ -3,6 +3,7 @@ from keras.models import load_model
 import numpy as np
 import time
 import random
+from dataclasses import dataclass
 
 model = load_model('keras_model.h5')
 cap = cv2.VideoCapture(0)
@@ -19,63 +20,87 @@ def capture(model_, cap_, data_) -> np.array:
     # Press q to close the window
     return prediction
 
-def countdown():
-    a = time.time()
-    n = 4
-    while n > 0:
-        if time.time() - a > 1:
-            a = time.time()
-            n -= 1
-            print(n)
 
 def get_prediction(input: np.array) -> str:
     list = ["rock", "paper", "scissors", "Nothing"]
     #return f"You chose {list[np.argmax(input[0])]}."
     return list[np.argmax(input[0])]
 
-def get_computer_choice() -> str:
-    return random.choice(["rock", "paper", "scissors"])
+@dataclass
+class Camera():
+    test = 0
 
-def get_winner(computer_choice: str, user_choice: str) -> str:
-    print(computer_choice)
-    u_w = "User wins"
-    c_w = "Computer wins"
-    if computer_choice == user_choice:
-        return "Tie"
-    elif computer_choice == "rock":
-        if user_choice == "paper":
-            return u_w
-        else:
-            return c_w
-    elif computer_choice == "paper":
-        if user_choice == "scissors":
-            return u_w
-        else:
-            return c_w
-    else:
-        if user_choice == "rock":
-            return u_w
-        else:
-            return c_w
+@dataclass
+class Game():
+    winning_score = 3
 
-def play(model_, cap_, data_):
-    user_choice = get_prediction(capture(model_, cap_, data_))
-    computer_choice = get_computer_choice()
-    print(user_choice, computer_choice)
+    computer_choice: int
+    user_choice: int
+    computer_score = 0
+    user_score = 0
 
-    countdown()
-    return get_winner(computer_choice, user_choice)
+    camera = Camera()
 
-computer_wins = 0
-user_wins = 0
+    @property
+    def computer_choice(self):
+        return self.computer_choice
 
-while max(computer_wins, user_wins) < 3:
-    result = play(model, cap, data)
-    if result == "User wins":
-        user_wins += 1
-    elif result == "Computer wins":
-        computer_wins += 1
-    print(f"{result}. Computer: {computer_wins} vs User: {user_wins}.")
+    @computer_choice.setter
+    def computer_choice(self):
+        self.computer_choice = random.choice(["rock", "paper", "scissors"])
 
+    @property
+    def user_choice(self):
+        return self.user_choice
+
+    @user_choice.setter()
+    def user_choice(self):
+        print("Getting user choice from camera/model")
+        self.user_choice = 0
+
+    def get_winner(self):
+        print(self.computer_choice)
+        if self.computer_choice == self.user_choice or self.user_choice == "Nothing":
+            print("Tie")
+        elif self.computer_choice == "rock":
+            if self.user_choice == "paper":
+                self.user_score += 1
+            else:
+                self.computer_score += 1
+        elif self.computer_choice == "paper":
+            if self.user_choice == "scissors":
+                self.user_score += 1
+            else:
+                self.computer_score += 1
+        elif self.computer_choice == "scissors":
+            if self.user_choice == "rock":
+                self.user_score += 1
+            else:
+                self.computer_score += 1
+    
+    def game_status(self):
+        while max(self.computer_wins, self.user_wins) < self.winning_score:
+            result = self.new_turn()
+
+
+    def new_turn(self):
+        #get computer choice
+        self.computer_choice()
+        self.countdown()
+        self.user_input = self.camera.get_choice()
+        self.get_winner()
+        self.game_status()
+
+    @staticmethod
+    def countdown():
+        timer = time.time()
+        seconds_remaining = 3
+        while seconds_remaining > 0:
+            # Every second, deduct 1 from seconds remaining and print
+            if time.time() - timer  > 1:
+                timer = time.time()
+                seconds_remaining -= 1
+                print(seconds_remaining)
+        
 
 
