@@ -5,31 +5,23 @@ import time
 import random
 from dataclasses import dataclass
 
-model = load_model('keras_model.h5')
-cap = cv2.VideoCapture(0)
-data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
-
-def capture(model_, cap_, data_) -> np.array:
-    ret, frame = cap.read()
-    resized_frame = cv2.resize(frame, (224, 224), interpolation = cv2.INTER_AREA)
-    image_np = np.array(resized_frame)
-    normalized_image = (image_np.astype(np.float32) / 127.0) - 1 # Normalize the image
-    data[0] = normalized_image
-    prediction = model.predict(data)
-    cv2.imshow('frame', frame)
-    # Press q to close the window
-    return prediction
-
-
-def get_prediction(input: np.array) -> str:
-    list = ["rock", "paper", "scissors", "Nothing"]
-    #return f"You chose {list[np.argmax(input[0])]}."
-    return list[np.argmax(input[0])]
-
 @dataclass
 class Camera():
-    test = 0
+    model = load_model('keras_model.h5')
+    cap = cv2.VideoCapture(0)
+    data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
+    ret, frame = cap.read()
+    resized_frame = cv2.resize(frame, (224, 224), interpolation = cv2.INTER_AREA)
+    cv2.imshow('frame', frame)
 
+    def get_user_choice(self):
+        image_np = np.array(self.resized_frame)
+        normalized_image = (image_np.astype(np.float32) / 127.0) - 1 # Normalize the image
+        data[0] = normalized_image
+        prediction = model.predict(data)
+        options = ["rock", "paper", "scissors", "Nothing"]
+        return options[np.argmax(prediction[0])]
+    
 @dataclass
 class Game():
     winning_score = 3
@@ -84,10 +76,9 @@ class Game():
 
 
     def new_turn(self):
-        #get computer choice
         self.computer_choice()
         self.countdown()
-        self.user_input = self.camera.get_choice()
+        self.user_input = self.camera.get_user_choice()
         self.get_winner()
         self.game_status()
 
@@ -102,5 +93,4 @@ class Game():
                 seconds_remaining -= 1
                 print(seconds_remaining)
         
-
-
+g = Game()
