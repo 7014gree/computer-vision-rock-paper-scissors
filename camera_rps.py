@@ -5,20 +5,28 @@ import time
 import random
 from dataclasses import dataclass
 
-@dataclass
+
+print(1)
+
 class Camera():
-    model = load_model('keras_model.h5')
-    cap = cv2.VideoCapture(0)
-    data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
-    ret, frame = cap.read()
-    resized_frame = cv2.resize(frame, (224, 224), interpolation = cv2.INTER_AREA)
-    cv2.imshow('frame', frame)
+    def __init__(self):
+        self.model = load_model('keras_model.h5')
+        self.cap = cv2.VideoCapture(0)
+        self.data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
+
 
     def get_user_choice(self):
-        image_np = np.array(self.resized_frame)
+        ret, frame = self.cap.read()
+        resized_frame = cv2.resize(frame, (224, 224), interpolation = cv2.INTER_AREA)
+        cv2.imshow('frame', frame)
+        print(43)
+        cv2.waitKey(0)
+        print(44)
+        cv2.destroyAllWindows()
+        image_np = np.array(resized_frame)
         normalized_image = (image_np.astype(np.float32) / 127.0) - 1 # Normalize the image
-        data[0] = normalized_image
-        prediction = model.predict(data)
+        self.data[0] = normalized_image
+        prediction = self.model.predict(self.data)
         options = ["rock", "paper", "scissors", "Nothing"]
         return options[np.argmax(prediction[0])]
     
@@ -26,32 +34,32 @@ class Camera():
 class Game():
     winning_score = 3
 
-    computer_choice: int
-    user_choice: int
+    computer_choice = -1
+    user_choice = -1
     computer_score = 0
     user_score = 0
 
     camera = Camera()
 
-    @property
+    """@property
     def computer_choice(self):
-        return self.computer_choice
+        return self.computer_choice"""
 
-    @computer_choice.setter
+    """@computer_choice.setter
     def computer_choice(self):
-        self.computer_choice = random.choice(["rock", "paper", "scissors"])
+        self.computer_choice = random.choice(["rock", "paper", "scissors"])"""
 
-    @property
+    """@property
     def user_choice(self):
-        return self.user_choice
+        return self.user_choice"""
 
-    @user_choice.setter()
+    """@user_choice.setter()
     def user_choice(self):
         print("Getting user choice from camera/model")
-        self.user_choice = 0
+        self.user_choice = 0"""
 
     def get_winner(self):
-        print(self.computer_choice)
+        print(self.computer_choice, self.user_choice)
         if self.computer_choice == self.user_choice or self.user_choice == "Nothing":
             print("Tie")
         elif self.computer_choice == "rock":
@@ -71,26 +79,32 @@ class Game():
                 self.computer_score += 1
     
     def game_status(self):
-        while max(self.computer_wins, self.user_wins) < self.winning_score:
-            result = self.new_turn()
+        if max(self.computer_score, self.user_score) < self.winning_score:
+            self.new_turn()
+        else:
+            print(f"Final score: {self.computer_score} : {self.user_score}")
 
 
     def new_turn(self):
-        self.computer_choice()
+        self.computer_choice = random.choice(["rock", "paper", "scissors"])
         self.countdown()
         self.user_input = self.camera.get_user_choice()
+        print(f"from camera: {self.user_input}")
         self.get_winner()
+        print(f"current score: computer: {self.computer_score} vs user: {self.user_score}")
         self.game_status()
 
     @staticmethod
     def countdown():
         timer = time.time()
-        seconds_remaining = 3
+        seconds_remaining = 4
         while seconds_remaining > 0:
             # Every second, deduct 1 from seconds remaining and print
             if time.time() - timer  > 1:
                 timer = time.time()
                 seconds_remaining -= 1
                 print(seconds_remaining)
-        
+
+print(2) 
 g = Game()
+g.game_status()
