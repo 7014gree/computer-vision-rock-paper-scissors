@@ -13,3 +13,9 @@
 ## Milestone 5
 - Initial implementation is working but needs refactoring.
 - Took code from RPS-Template to capture a single frame and adapated code from manual_rps for the computer choice and handling who won/loss each round
+- Implemented the rock, paper, scissors game as a class
+- First tried to implement the camera as a class but that seemed to exacerbate issues around only capturing a single frame.
+- Moved camera to a while loop within which methods for the game class were called.
+- Added text annotations to the camera frame to show the current user input move, the computer move once the user move had been locked in, running scores throughout the game, and a final score screen.
+- Could tidy up class methods and formatting of annotations, among other things.
+- The model itself isn't the most accurate - struggled to get it to take a user input for 'rock'.
