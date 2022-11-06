@@ -6,7 +6,7 @@ import random
 from dataclasses import dataclass
 
 
-print(1)
+print("Game loading...")
 
 class Camera():
     def __init__(self):
@@ -27,6 +27,7 @@ class Camera():
         normalized_image = (image_np.astype(np.float32) / 127.0) - 1 # Normalize the image
         self.data[0] = normalized_image
         prediction = self.model.predict(self.data)
+        print(prediction)
         options = ["rock", "paper", "scissors", "Nothing"]
         return options[np.argmax(prediction[0])]
     
@@ -88,8 +89,8 @@ class Game():
     def new_turn(self):
         self.computer_choice = random.choice(["rock", "paper", "scissors"])
         self.countdown()
-        self.user_input = self.camera.get_user_choice()
-        print(f"from camera: {self.user_input}")
+        self.user_choice = self.camera.get_user_choice()
+        print(f"from camera: {self.user_choice}")
         self.get_winner()
         print(f"current score: computer: {self.computer_score} vs user: {self.user_score}")
         self.game_status()
@@ -105,6 +106,6 @@ class Game():
                 seconds_remaining -= 1
                 print(seconds_remaining)
 
-print(2) 
+print("Game starting...") 
 g = Game()
 g.game_status()
